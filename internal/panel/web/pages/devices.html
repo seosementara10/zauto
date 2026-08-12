@@ -1,0 +1,77 @@
+<div class="page page-devices" id="page-devices" data-page="devices">
+  <header class="page-header">
+    <h1 class="page-title">Device &amp; Mirror</h1>
+    <p class="page-sub">Kelola HP USB dan LDPlayer — aktifkan switch, mirror, dan jalankan otomatis.</p>
+  </header>
+
+  <div id="adbBanner" class="dev-info-banner" style="display:none" role="status"></div>
+  <div class="dev-stats-grid" id="devStats"></div>
+
+  <section class="z-card dev-list-card" id="section-devices">
+    <div class="dev-list-header">
+      <div class="dev-list-header-left">
+        <h2 class="dev-list-title">Device — aktifkan yang dipakai</h2>
+        <div class="dev-list-meta" id="deviceListMeta">Memuat…</div>
+      </div>
+      <div class="dev-list-header-right">
+        <label class="dev-auto-refresh">
+          <span class="dev-auto-refresh-label">Auto refresh</span>
+          <span class="switch dev-switch dev-switch-sm">
+            <input type="checkbox" id="devAutoRefresh" checked>
+            <span class="slider"></span>
+          </span>
+        </label>
+        <button type="button" class="dev-icon-btn" title="Refresh" onclick="api('devices/refresh')"><i data-lucide="refresh-cw" class="icon-lucide" aria-hidden="true"></i></button>
+      </div>
+    </div>
+
+    <div class="dev-list-wrap">
+      <div class="dev-list" id="deviceList"></div>
+    </div>
+
+    <div class="dev-sections-grid">
+      <div class="dev-register dev-register-usb">
+        <div class="dev-register-head">
+          <h3 class="dev-register-title">HP fisik (USB)</h3>
+          <p class="dev-register-hint">Colok USB — muncul otomatis. Daftarkan manual jika perlu.</p>
+        </div>
+        <div class="dev-register-fields">
+          <label class="dev-field"><span>Serial HP</span><input type="text" id="devSerial" placeholder="007519…"></label>
+          <label class="dev-field"><span>Label</span><input type="text" id="devLabel" placeholder="HP4"></label>
+          <button type="button" class="dev-register-btn" onclick="registerDevice()">+ Daftarkan HP</button>
+        </div>
+      </div>
+
+      <div class="dev-register dev-emulator-panel">
+        <div class="dev-register-head">
+          <h3 class="dev-register-title">LDPlayer</h3>
+          <p class="dev-register-hint" id="ldplayerMeta">Memuat instance…</p>
+        </div>
+        <div class="dev-emulator-actions">
+          <button type="button" class="dev-register-btn" onclick="addLDPlayerInstance()">+ Tambah instance</button>
+          <button type="button" class="dev-btn-ghost" onclick="launchAllLDPlayer()">Launch semua</button>
+        </div>
+        <div class="dev-emulator-list" id="ldplayerList"></div>
+      </div>
+    </div>
+
+    <div class="dev-quick-bar">
+      <label class="dev-quick-item dev-quick-toggle">
+        <span class="dev-quick-icon dev-quick-icon--bolt"><i data-lucide="zap" aria-hidden="true"></i></span>
+        <span>Auto ON</span>
+        <span class="switch dev-switch dev-switch-sm">
+          <input type="checkbox" id="devAutoOn" onchange="onDevAutoOnToggle(this)">
+          <span class="slider"></span>
+        </span>
+      </label>
+      <button type="button" class="dev-quick-item dev-quick-action" onclick="confirmDisableAll()">
+        <span class="dev-quick-icon dev-quick-icon--clock"><i data-lucide="pause" aria-hidden="true"></i></span>
+        <span>Matikan semua</span>
+      </button>
+      <button type="button" class="dev-quick-item dev-quick-action" onclick="relayoutMirrors()">
+        <span class="dev-quick-icon dev-quick-icon--layout"><i data-lucide="layout-grid" aria-hidden="true"></i></span>
+        <span>Atur mirror</span>
+      </button>
+    </div>
+  </section>
+</div>

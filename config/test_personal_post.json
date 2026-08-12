@@ -1,0 +1,59 @@
+{
+  "adb_retries": 3,
+  "adb_timeout_sec": 30,
+  "app_activities": {
+    "facebook": "com.facebook.katana.LoginActivity"
+  },
+  "apps": {
+    "facebook": "com.facebook.katana"
+  },
+  "auto_detect_user": true,
+  "automation": {
+    "driver": "adb"
+  },
+  "clear_app_before_open": true,
+  "database": {
+    "max_accounts_per_device": 50,
+    "url": "postgres://zauto:zauto_dev@127.0.0.1:5433/zauto?sslmode=disable"
+  },
+  "delay_after_force_stop_sec": 0.1,
+  "delay_between_actions_sec": 0.5,
+  "delay_between_loops_sec": 0.7,
+  "device_filter": [],
+  "engine": {
+    "app_launch_wait_sec": 3,
+    "poll_sec": 0,
+    "post_action_delay_sec": 0.5,
+    "retry": {
+      "delay_sec": 0.5,
+      "max_attempts": 2
+    }
+  },
+  "force_stop_after_task": false,
+  "force_stop_before_open": true,
+  "loop_count": 1,
+  "max_devices": 2,
+  "mirror_mode": "dashboard",
+  "mirror_on_run": false,
+  "mode": "prod",
+  "parallel_workers": 2,
+  "registration": {
+    "posts_file": "data/posts.txt",
+    "images_dir": "data/post_images",
+    "post_index": 0
+  },
+  "screen_profile": "720x1600",
+  "screenshot_on_error": true,
+  "tasks": [
+    {
+      "app": "facebook",
+      "description": "Uji personal post: login lalu posting ke Beranda (tanpa logout)",
+      "flow": "facebook_login_auto_post",
+      "name": "facebook_auto_post",
+      "params": {
+        "post_index": 0
+      }
+    }
+  ],
+  "wake_screen_before_task": true
+}

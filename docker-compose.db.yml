@@ -1,0 +1,28 @@
+# PostgreSQL zauto — port 5433 (terpisah WY CMS 5432).
+#
+# Cara pakai (database + panel native):
+#   .\up.ps1
+#
+# Panel saja (setelah DB jalan):
+#   .\zauto.exe open
+
+services:
+  zauto-postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: zauto
+      POSTGRES_PASSWORD: zauto_dev
+      POSTGRES_DB: zauto
+    volumes:
+      - zauto-pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zauto -d zauto"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  zauto-pg-data:

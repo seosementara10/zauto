@@ -1,0 +1,5 @@
+# Update fanpages untuk Nurhayati Guguk (profile 61592118521974)
+# Import: Panel → Akun → Pilih file ini → Import preview
+# Format: Nama Fanpage:Facebook Page ID
+
+@fanpages|61592118521974|Ibu Nurhayati:615931763399|Pengalaman Nurhayati:61593132631889|Fans Nurhayati:61592753657118|Nurhayati Selalu:61593073595562

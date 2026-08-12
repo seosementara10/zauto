@@ -1,0 +1,54 @@
+<div class="page page-dashboard active" id="page-dashboard" data-page="dashboard">
+  <header class="page-header">
+    <h1 class="page-title">Dashboard</h1>
+    <p class="page-sub">Ringkasan farm — status HP, akun, dan kesehatan sistem.</p>
+  </header>
+
+  <div class="dash-stats-grid" id="dashStats"></div>
+
+  <section class="z-card dash-sys-card">
+    <div class="dash-sys-bar">
+      <div class="dash-sys-metrics" id="healthRow"></div>
+      <div class="dash-sys-badge" id="healthBadge"></div>
+    </div>
+    <div class="dash-checklist" id="dashChecklist"></div>
+  </section>
+
+  <section class="z-card dash-quick-card">
+    <div class="dash-quick-grid">
+      <button type="button" class="dash-quick-item" onclick="showPage('devices')">
+        <span class="dash-quick-icon dash-quick-icon--blue">
+          <i data-lucide="smartphone" aria-hidden="true"></i>
+        </span>
+        <span class="dash-quick-text"><strong>Kelola Device</strong><small>HP &amp; LDPlayer</small></span>
+      </button>
+      <button type="button" class="dash-quick-item" onclick="showPage('accounts')">
+        <span class="dash-quick-icon dash-quick-icon--purple">
+          <i data-lucide="users" aria-hidden="true"></i>
+        </span>
+        <span class="dash-quick-text"><strong>Kelola Akun</strong><small>Import &amp; assign</small></span>
+      </button>
+      <button type="button" class="dash-quick-item" onclick="showPage('skrip')">
+        <span class="dash-quick-icon dash-quick-icon--orange">
+          <i data-lucide="file-code" aria-hidden="true"></i>
+        </span>
+        <span class="dash-quick-text"><strong>Pilih Skrip</strong><small>Katalog automation</small></span>
+      </button>
+    </div>
+    <button type="button" class="dash-automation-btn" id="btnDashRun" onclick="doRun()">
+      <i data-lucide="play" class="btn-lucide" aria-hidden="true"></i>
+      Jalankan Automation
+    </button>
+  </section>
+
+  <section class="z-card dash-activity-card">
+    <div class="dash-activity-header">
+      <h2 class="dash-activity-title">
+        <i data-lucide="activity" class="lucide-sm" aria-hidden="true"></i>
+        Aktivitas terbaru
+      </h2>
+      <button type="button" class="dash-activity-link" onclick="showPage('log')">Lihat semua →</button>
+    </div>
+    <div class="dash-activity-list" id="dashLog"></div>
+  </section>
+</div>

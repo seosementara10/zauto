@@ -1,0 +1,111 @@
+{
+  "adb_retries": 3,
+  "adb_timeout_sec": 30,
+  "app_activities": {
+    "facebook": "com.facebook.katana.LoginActivity"
+  },
+  "apps": {
+    "facebook": "com.facebook.katana"
+  },
+  "auto_detect_user": true,
+  "automation": {
+    "appium": {
+      "auto_grant_permissions": true,
+      "automation_name": "UiAutomator2",
+      "no_reset": true,
+      "port_base": 4723,
+      "port_per_device": true,
+      "port_stride": 1,
+      "server_url": "http://127.0.0.1:4723"
+    },
+    "driver": "adb"
+  },
+  "clear_app_before_open": false,
+  "database": {
+    "max_accounts_per_device": 50,
+    "url": "postgres://zauto:zauto_dev@127.0.0.1:5433/zauto?sslmode=disable"
+  },
+  "delay_after_force_stop_sec": 0.1,
+  "delay_between_actions_sec": 0,
+  "delay_between_loops_sec": 0.7,
+  "device_filter": [],
+  "emulator": {
+    "auto_connect": true,
+    "instance_count": 10,
+    "install_path": "C:\\LDPlayer\\LDPlayer14"
+  },
+  "engine": {
+    "app_launch_wait_sec": 3,
+    "poll_sec": 0.15,
+    "post_action_delay_sec": 0,
+    "retry": {
+      "delay_sec": 0.5,
+      "max_attempts": 2
+    }
+  },
+  "force_stop_after_task": true,
+  "force_stop_before_open": true,
+  "loop_count": 1,
+  "max_devices": 3,
+  "mirror_mode": "dashboard",
+  "mirror_on_run": true,
+  "mirror_port": 8765,
+  "mode": "prod",
+  "parallel_workers": 3,
+  "registration": {
+    "emails_file": "data/email.txt",
+    "images_dir": "data/post_images",
+    "names_file": "data/names.txt",
+    "post_index": 0,
+    "posts_file": "data/posts.txt"
+  },
+  "screen_profile": "720x1600",
+  "screen_profiles": {
+    "720x1600": {
+      "scroll_down": {
+        "duration_ms": 300,
+        "x1": 360,
+        "x2": 360,
+        "y1": 1120,
+        "y2": 400
+      },
+      "scroll_up": {
+        "duration_ms": 300,
+        "x1": 360,
+        "x2": 360,
+        "y1": 400,
+        "y2": 1120
+      }
+    }
+  },
+  "screenshot_on_error": true,
+  "tasks": [
+    {
+      "app": "facebook",
+      "description": "Uji login + logout penuh (reset akun di HP)",
+      "flow": "facebook_login_logout",
+      "name": "facebook_login",
+      "params": {}
+    },
+    {
+      "app": "facebook",
+      "description": "Login → post teks/gambar ke Beranda personal (tanpa logout)",
+      "flow": "facebook_login_auto_post",
+      "name": "facebook_auto_post",
+      "params": {
+        "post_index": 0
+      }
+    },
+    {
+      "app": "facebook",
+      "description": "Login → post ke semua fanpage akun (dari DB)",
+      "flow": "facebook_login_fanpage_post",
+      "name": "facebook_fanpage_post",
+      "params": {
+        "fanpage_mode": "all",
+        "post_index": 0
+      }
+    }
+  ],
+  "wake_screen_before_task": true
+}

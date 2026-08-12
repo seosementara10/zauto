@@ -1,0 +1,31 @@
+# DeviceFarmer STF — template for WSL2/Linux provider
+# Windows: USB via usbipd-win → WSL2, then run this compose inside WSL
+#
+# Usage (inside WSL2 after adb devices shows phones):
+#   docker compose up -d
+#   open http://localhost:7100
+
+services:
+  rethinkdb:
+    image: rethinkdb:2.4.2
+    restart: unless-stopped
+    volumes:
+      - rethinkdb-data:/data
+
+  stf:
+    image: devicefarmer/stf:latest
+    restart: unless-stopped
+    network_mode: host
+    privileged: true
+    depends_on:
+      - rethinkdb
+    environment:
+      - RETHINKDB_PORT_28015_TCP=tcp://127.0.0.1:28015
+    command: >
+      stf local
+      --public-ip 127.0.0.1
+      --allow-remote
+      --adb-host 127.0.0.1
+
+volumes:
+  rethinkdb-data:

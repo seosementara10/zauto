@@ -1,0 +1,73 @@
+<div class="page page-settings" id="page-settings" data-page="settings">
+  <header class="page-header set-head">
+    <div class="set-head-row">
+      <div>
+        <h1 class="page-title">Pengaturan</h1>
+        <p class="page-sub">Semua setup disimpan ke config — tanpa edit JSON manual.</p>
+      </div>
+      <div class="set-save-wrap">
+        <span id="settingsDirtyHint" class="set-dirty-hint" style="display:none">Belum disimpan</span>
+        <button type="button" class="set-save-btn" id="btnSaveSettings" onclick="saveSettings()" disabled>
+          <i data-lucide="save" class="btn-lucide" aria-hidden="true"></i>
+          Simpan
+        </button>
+      </div>
+    </div>
+    <div id="settingsRunBanner" class="set-run-banner" style="display:none" role="status"></div>
+    <div id="settingsSaveHint" class="set-save-hint"></div>
+  </header>
+
+  <section class="set-card z-card">
+    <div class="set-card-hd z-card-hd"><h2>Run &amp; paralel</h2></div>
+    <div class="set-card-bd set-grid z-card-bd">
+      <label class="set-field z-field">Max HP <input type="number" id="setMaxDev" min="1" max="100" value="2"></label>
+      <label class="set-field z-field">Workers <input type="number" id="setWorkers" min="1" max="100" value="2"></label>
+      <label class="set-field z-field">Loop count <input type="number" id="setLoopCount" min="1" value="1"></label>
+    </div>
+  </section>
+
+  <section class="set-card z-card">
+    <div class="set-card-hd z-card-hd"><h2>Timing &amp; observe</h2></div>
+    <p class="set-card-note">Engine memakai poll UI hierarchy — bukan sleep fixed.</p>
+    <div class="set-card-bd set-grid z-card-bd">
+      <label class="set-field z-field">Interval poll UI (detik) <input type="number" id="setPollSec" min="0" step="0.05" value="0.15"></label>
+      <label class="set-field z-field">Antar loop (detik) <input type="number" id="setDelayLoops" min="0" step="0.1" value="0.7"></label>
+      <label class="set-field z-field">Antar aksi (detik) <input type="number" id="setDelayActions" min="0" step="0.05" value="0"></label>
+      <label class="set-field z-field">Setelah aksi post (detik) <input type="number" id="setPostAction" min="0" step="0.05" value="0"></label>
+      <label class="set-field z-field">Tunggu app launch (detik) <input type="number" id="setLaunchWait" min="0" step="0.5" value="3"></label>
+      <label class="set-field z-field">Setelah force-stop (detik) <input type="number" id="setDelayForceStop" min="0" step="0.05" value="0.1"></label>
+    </div>
+  </section>
+
+  <section class="set-card z-card">
+    <div class="set-card-hd z-card-hd"><h2>Retry &amp; driver</h2></div>
+    <div class="set-card-bd set-grid z-card-bd">
+      <label class="set-field z-field">Retry delay (detik) <input type="number" id="setRetryDelay" min="0" step="0.1" value="0"></label>
+      <label class="set-field z-field">Retry max <input type="number" id="setRetryMax" min="0" value="2"></label>
+      <label class="set-field z-field">Automation driver
+        <select id="setDriver"><option value="adb">adb</option><option value="appium">appium</option></select>
+      </label>
+      <label class="set-field z-field">ADB timeout (detik) <input type="number" id="setAdbTimeout" min="5" value="30"></label>
+      <label class="set-field z-field">ADB retries <input type="number" id="setAdbRetries" min="1" value="3"></label>
+    </div>
+  </section>
+
+  <section class="set-card z-card">
+    <div class="set-card-hd z-card-hd"><h2>Perilaku task</h2></div>
+    <div class="set-card-bd z-card-bd">
+      <div class="set-toggles">
+        <label class="set-toggle"><input type="checkbox" id="setWakeScreen"> Wake screen sebelum task</label>
+        <label class="set-toggle"><input type="checkbox" id="setForceStopBefore"> Force-stop sebelum buka app</label>
+        <label class="set-toggle"><input type="checkbox" id="setForceStopAfter"> Force-stop setelah task</label>
+        <label class="set-toggle"><input type="checkbox" id="setScreenshotErr"> Screenshot saat error</label>
+        <label class="set-toggle"><input type="checkbox" id="setMirrorOnRun"> Mirror saat run</label>
+      </div>
+    </div>
+  </section>
+
+  <section class="set-card z-card set-card--muted">
+    <div class="set-card-ft z-card-bd">
+      <button type="button" class="set-save-btn set-save-btn--wide" id="btnSaveSettingsBottom" onclick="saveSettings()" disabled>Simpan semua pengaturan</button>
+    </div>
+  </section>
+</div>

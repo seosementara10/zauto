@@ -1,0 +1,31 @@
+<div class="page" id="page-accounts" data-page="accounts">
+  <header class="page-header">
+    <h1 class="page-title">Akun Facebook</h1>
+    <p class="page-sub">Import, assign ke HP. <strong>Detail</strong> = info · <strong>Gear</strong> = pipeline &amp; assign.</p>
+  </header>
+
+  <section class="z-card" id="section-accounts">
+    <div class="z-card-hd">
+      <span class="z-step-num">1</span>
+      <h2 class="z-card-title">Kelola Akun</h2>
+    </div>
+    <div class="z-card-bd" id="accountsPanel">
+      <div class="accounts-stats" id="accountsStats">Memuat…</div>
+      <div class="accounts-actions">
+        <input type="file" id="importFile" accept=".txt,.csv,.tsv" class="hidden" onchange="onImportFileSelected(this)">
+        <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('importFile').click()"><i data-lucide="folder-open" class="btn-lucide" aria-hidden="true"></i> Pilih file</button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="importDefaultFile()"><i data-lucide="upload" class="btn-lucide" aria-hidden="true"></i> accounts.txt</button>
+        <button type="button" class="btn btn-sm btn-primary" id="btnConfirmImport" style="display:none" onclick="confirmImportPreview()"><i data-lucide="check" class="btn-lucide" aria-hidden="true"></i> Import</button>
+        <button type="button" class="btn btn-sm btn-primary" onclick="autoAssign()"><i data-lucide="link" class="btn-lucide" aria-hidden="true"></i> Assign HP ↔ Akun</button>
+      </div>
+      <div id="importPreview" class="import-preview" style="display:none"></div>
+      <div class="inline-form z-form-row">
+        <label class="z-field">Nama <input type="text" id="accName" placeholder="Nama FB"></label>
+        <label class="z-field">Email / ID <input type="text" id="accLogin" placeholder="email@…"></label>
+        <label class="z-field">Password <input type="password" id="accPass" placeholder="••••"></label>
+        <button type="button" class="btn btn-sm btn-run" onclick="createAccount()"><i data-lucide="plus" class="btn-lucide" aria-hidden="true"></i> Tambah akun</button>
+      </div>
+      <div id="accountsList" class="accounts-table-wrap"></div>
+    </div>
+  </section>
+</div>

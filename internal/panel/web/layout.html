@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+
+<html lang="id" class="h-full">
+
+<head>
+
+<meta charset="utf-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>zauto Panel</title>
+
+<link rel="stylesheet" href="/assets/tailwind.css?v=2.4">
+
+<link rel="stylesheet" href="/assets/styles.css?v=2.4">
+
+</head>
+
+<body class="h-full overflow-hidden bg-slate-100 text-slate-800 antialiased selection:bg-brand-100">
+
+
+
+<div class="flex h-full w-full min-w-0">
+
+
+
+  <!-- Sidebar -->
+
+  <aside class="z-sidebar flex w-[220px] shrink-0 flex-col bg-gradient-to-b from-slate-900 via-slate-900 to-brand-900 text-white shadow-xl">
+
+    <div class="flex items-center gap-3 border-b border-white/10 px-4 py-4">
+
+      <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15 ring-1 ring-white/20">
+
+        <i data-lucide="zap" class="lucide-brand" aria-hidden="true"></i>
+
+      </div>
+
+      <div class="min-w-0">
+
+        <div class="truncate text-sm font-bold tracking-wide">ZAUTO</div>
+
+        <div class="text-[10px] font-medium uppercase tracking-wider text-blue-200/80">Panel Pro</div>
+
+      </div>
+
+    </div>
+
+
+
+    <nav class="nav flex-1 space-y-0.5 overflow-y-auto px-2 py-3">
+
+      <button type="button" class="nav-item active" data-page="dashboard" onclick="showPage('dashboard', this)">
+
+        <i data-lucide="layout-dashboard" class="nav-icon" aria-hidden="true"></i>
+
+        <span>Dashboard</span>
+
+      </button>
+
+      <button type="button" class="nav-item" data-page="devices" onclick="showPage('devices', this)">
+
+        <i data-lucide="smartphone" class="nav-icon" aria-hidden="true"></i>
+
+        <span>Device</span>
+
+      </button>
+
+      <button type="button" class="nav-item" data-page="accounts" onclick="showPage('accounts', this)">
+
+        <i data-lucide="users" class="nav-icon" aria-hidden="true"></i>
+
+        <span>Akun</span>
+
+      </button>
+
+      <button type="button" class="nav-item" data-page="skrip" onclick="showPage('skrip', this)">
+
+        <i data-lucide="file-code" class="nav-icon" aria-hidden="true"></i>
+
+        <span>Skrip</span>
+
+      </button>
+
+      <button type="button" class="nav-item" data-page="text" onclick="showPage('text', this)">
+
+        <i data-lucide="align-left" class="nav-icon" aria-hidden="true"></i>
+
+        <span>Text</span>
+
+      </button>
+
+      <button type="button" class="nav-item" data-page="settings" onclick="showPage('settings', this)">
+
+        <i data-lucide="settings" class="nav-icon" aria-hidden="true"></i>
+
+        <span>Setup</span>
+
+      </button>
+
+      <button type="button" class="nav-item" data-page="kontrol" onclick="showPage('kontrol', this)">
+
+        <i data-lucide="circle-play" class="nav-icon" aria-hidden="true"></i>
+
+        <span>Run</span>
+
+      </button>
+
+      <button type="button" class="nav-item" data-page="log" onclick="showPage('log', this)">
+
+        <i data-lucide="scroll-text" class="nav-icon" aria-hidden="true"></i>
+
+        <span>Log</span>
+
+      </button>
+
+    </nav>
+
+
+
+    <div class="mx-3 mb-3 rounded-xl bg-white/10 p-3 ring-1 ring-white/10">
+
+      <p class="text-[11px] font-semibold text-white">Farm Automation</p>
+
+      <p class="mt-0.5 text-[10px] text-blue-100/70">HP · LDPlayer · Mirror</p>
+
+    </div>
+
+  </aside>
+
+
+
+  <!-- Main -->
+
+  <div class="flex min-w-0 flex-1 flex-col" id="top">
+
+
+
+    <!-- Top bar -->
+
+    <header class="z-topbar shrink-0 border-b border-slate-200/80 bg-white/90 px-5 py-3 shadow-sm backdrop-blur-sm">
+
+      <div class="flex flex-wrap items-start justify-between gap-3">
+
+        <div class="min-w-0">
+
+          <div class="flex flex-wrap items-center gap-2">
+
+            <h1 class="text-lg font-bold tracking-tight text-slate-900">zauto Panel</h1>
+
+            <span class="badge-pro rounded-md bg-gradient-to-r from-amber-400 to-orange-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">Pro</span>
+
+          </div>
+
+          <p class="topbar-desc mt-0.5 text-xs text-slate-500">Setup &amp; kontrol farm — mirror scrcpy terbuka terpisah</p>
+
+        </div>
+
+
+
+        <div class="flex flex-wrap items-stretch gap-2">
+
+          <div class="status-card min-w-[200px] rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-panel">
+
+            <div class="status-row flex items-center gap-2 text-xs text-slate-600">
+
+              <span class="status-dot dot-idle" id="statusDot"></span>
+
+              <span>Status: <strong class="text-slate-900" id="statusText">idle</strong></span>
+
+            </div>
+
+            <div class="stats-line mt-1 text-[11px] text-slate-500" id="statsLine">0 HP aktif · 0 Worker · 0 Akun</div>
+
+            <div id="preflightBanner" class="preflight-banner mt-2" style="display:none"></div>
+
+          </div>
+
+          <div class="flex items-center gap-1">
+
+            <button class="icon-btn" title="Maximize" onclick="toggleWindowMaximize()" id="btnMaximize">
+
+              <i data-lucide="maximize-2" class="icon-lucide" aria-hidden="true"></i>
+
+            </button>
+
+            <button class="icon-btn" title="Fullscreen (F11)" onclick="toggleWindowFullscreen()" id="btnFullscreen">
+
+              <i data-lucide="expand" class="icon-lucide" aria-hidden="true"></i>
+
+            </button>
+
+            <button class="icon-btn" title="Refresh (F5)" onclick="api('devices/refresh')">
+
+              <i data-lucide="refresh-cw" class="icon-lucide" aria-hidden="true"></i>
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </header>
+
+
+
+    <!-- Content -->
+
+    <div class="content flex min-h-0 flex-1 flex-col overflow-hidden">
+
+      <div class="pages flex min-h-0 flex-1 flex-col" id="pages"></div>
+
+    </div>
+
+
+
+    <!-- Run dock -->
+
+    <div class="runbar shrink-0 border-t border-slate-200 bg-white px-4 py-2.5 shadow-[0_-4px_20px_rgba(15,23,42,0.06)]" id="section-run">
+
+      <div class="flex flex-wrap items-center gap-2">
+
+        <button class="btn btn-run flex-1 sm:flex-none" id="btnRun" onclick="doRun()">
+
+          <i data-lucide="play" class="btn-lucide" aria-hidden="true"></i>
+
+          Jalankan Automation
+
+        </button>
+
+        <div class="runbar-sec flex flex-wrap gap-1.5">
+
+          <button class="btn btn-sm" id="btnPause" onclick="api('pause')" disabled>Pause</button>
+
+          <button class="btn btn-sm" id="btnResume" onclick="api('resume')" disabled>Resume</button>
+
+          <button class="btn btn-sm btn-stop" id="btnStop" onclick="api('stop')" disabled>Stop</button>
+
+          <button class="btn btn-sm btn-ack" id="btnAck" style="display:none" onclick="ackRun()"><i data-lucide="check" class="btn-lucide" aria-hidden="true"></i> Selesai</button>
+
+        </div>
+
+        <span class="shortcut-hint ml-auto hidden text-[10px] text-slate-400 sm:inline">F5 · F11 · Ctrl+R · Esc</span>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- Footer -->
+
+    <footer class="footer shrink-0 flex items-center justify-between border-t border-slate-100 bg-slate-50 px-4 py-1.5 text-[10px] text-slate-400">
+
+      <span class="footer-copy">© 2025 ZAUTO</span>
+
+      <span class="footer-ver flex items-center gap-1">
+
+        <span id="devModeBadge" class="dev-mode-badge" style="display:none">DEV</span>
+
+        <span class="dot-sse dot-sse-off" id="sseDot"></span>
+
+        <span id="sseLabel">offline</span> · v2.4
+
+      </span>
+
+    </footer>
+
+  </div>
+
+</div>
+
+
+
+<!-- Account drawer -->
+
+<div id="accDrawer" class="acc-drawer" aria-hidden="true">
+
+  <div class="acc-drawer-backdrop" onclick="closeAccDrawer()"></div>
+
+  <aside class="acc-drawer-panel" role="dialog">
+
+    <header class="acc-drawer-hd">
+
+      <div class="min-w-0">
+
+        <h3 id="accDrawerTitle" class="truncate text-base font-bold text-slate-900">Kelola akun</h3>
+
+        <p class="acc-drawer-sub truncate" id="accDrawerSub"></p>
+
+      </div>
+
+      <button type="button" class="acc-drawer-close" onclick="closeAccDrawer()" aria-label="Tutup">
+
+        <i data-lucide="x" class="icon-lucide" aria-hidden="true"></i>
+
+      </button>
+
+    </header>
+
+    <div class="acc-drawer-bd" id="accDrawerBody"></div>
+
+  </aside>
+
+</div>
+
+
+
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+
+<script src="/assets/app.js?v=2.4"></script>
+
+</body>
+
+</html>
+

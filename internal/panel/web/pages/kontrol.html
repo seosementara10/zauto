@@ -1,0 +1,29 @@
+<div class="page" id="page-kontrol" data-page="kontrol">
+  <header class="page-header">
+    <h1 class="page-title">Run &amp; Workers</h1>
+    <p class="page-sub">Atur max HP &amp; workers di tab <a href="#" class="z-link" onclick="showPage('settings');return false">Setup</a>.</p>
+  </header>
+  <section class="z-card" id="section-kontrol">
+    <div class="z-card-hd"><h2 class="z-card-title">Ringkas</h2></div>
+    <div class="z-card-bd z-form-row">
+      <label class="z-field">Max HP <input type="number" id="maxDev" min="1" value="2"></label>
+      <label class="z-field">Workers <input type="number" id="workers" min="1" value="2"></label>
+      <button type="button" class="btn btn-outline btn-sm" onclick="showPage('settings')"><i data-lucide="settings" class="btn-lucide" aria-hidden="true"></i> Setup</button>
+      <button type="button" class="btn btn-outline btn-sm" onclick="api('devices/refresh')"><i data-lucide="refresh-cw" class="btn-lucide" aria-hidden="true"></i> Refresh</button>
+    </div>
+  </section>
+  <section class="z-card"> 
+    <div class="z-card-hd"><h2 class="z-card-title">Kontrol Run</h2></div>
+    <div class="z-card-bd flex flex-wrap gap-2">
+      <button type="button" class="btn btn-run" id="btnRunPage" onclick="doRun()"><i data-lucide="play" class="btn-lucide" aria-hidden="true"></i> Jalankan</button>
+      <button type="button" class="btn btn-sm" id="btnPausePage" onclick="api('pause')">Pause</button>
+      <button type="button" class="btn btn-sm" id="btnResumePage" onclick="api('resume')">Resume</button>
+      <button type="button" class="btn btn-sm btn-stop" id="btnStopPage" onclick="api('stop')">Stop</button>
+      <button type="button" class="btn btn-sm btn-ack" id="btnAckPage" style="display:none" onclick="ackRun()"><i data-lucide="check" class="btn-lucide" aria-hidden="true"></i> Selesai</button>
+    </div>
+    <div class="z-card-bd results-box" id="lastResultsBox" style="display:none;padding-top:0">
+      <div class="text-xs font-bold text-slate-500 mb-1">Hasil run terakhir</div>
+      <div id="lastResultsList"></div>
+    </div>
+  </section>
+</div>

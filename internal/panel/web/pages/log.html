@@ -1,0 +1,17 @@
+<div class="page" id="page-log" data-page="log">
+  <header class="page-header">
+    <h1 class="page-title">Log Aktivitas</h1>
+    <p class="page-sub">Riwayat toggle, import, dan run.</p>
+  </header>
+  <section class="z-card" id="section-log">
+    <div class="z-card-hd"><h2 class="z-card-title">Log</h2></div>
+    <div class="z-card-bd">
+      <div class="log-tabs">
+        <button type="button" class="log-tab active" id="logTabSession" onclick="setLogTab('session')">Sesi ini</button>
+        <button type="button" class="log-tab" id="logTabServer" onclick="setLogTab('server')">Panel log</button>
+      </div>
+      <div class="activity activity-full" id="logPanel"></div>
+      <div class="server-log activity-full" id="serverLogPanel" style="display:none"></div>
+    </div>
+  </section>
+</div>

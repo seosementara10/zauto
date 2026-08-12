@@ -1,0 +1,4 @@
+# Format: caption text
+# Or: caption text|image_filename.jpg  (file in data/post_images/)
+Halo dari zauto — posting teks ke Beranda personal account.
+Posting dengan gambar|sample.jpg

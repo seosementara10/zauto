@@ -1,0 +1,20 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "zauto",
+  "outputfilename": "zauto",
+  "frontend:install": "",
+  "frontend:build": "",
+  "frontend:dev:watcher": "",
+  "frontend:dev:serverUrl": "",
+  "author": {
+    "name": "zauto",
+    "email": ""
+  },
+  "info": {
+    "companyName": "zauto",
+    "productName": "zauto Panel",
+    "productVersion": "1.0.0",
+    "copyright": "zauto",
+    "comments": "Android automation panel"
+  }
+}

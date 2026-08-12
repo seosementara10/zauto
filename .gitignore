@@ -1,0 +1,34 @@
+# Binaries
+/zauto
+/zauto.exe
+*.exe
+
+# Panel dev mode marker
+.panel-dev
+
+# Local tooling (portable git, etc.)
+.tools/
+
+# Frontend build deps (tailwind.css is committed)
+internal/panel/web/node_modules/
+
+# Logs & runtime artifacts (keep folders via .gitkeep)
+logs/*
+!logs/.gitkeep
+runs/*
+!runs/.gitkeep
+screenshots/*
+!screenshots/.gitkeep
+captures/*
+!captures/.gitkeep
+
+# Local databases / runtime data
+data/*.db
+data/*.db-*
+
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+*.exe~

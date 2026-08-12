@@ -1,0 +1,52 @@
+---
+description: Android UI automation — element locators first, coordinates last
+alwaysApply: true
+---
+
+# Android Locator Automation
+
+**Find the element, don't guess the position.**
+
+In all Android UI automation (`internal/engine`, `internal/driver`, `internal/appium`, `internal/ui`, `internal/adb`, configs/flows), **do NOT use absolute `(x, y)` as the primary way to find or tap UI elements.**
+
+## Locator priority (strict order)
+
+1. `resource-id` / `resourceId`
+2. `content-desc` / Accessibility ID
+3. `text` / visible text
+4. `className` + other relevant attributes
+5. XPath (fallback)
+6. Image matching / OCR (when hierarchy fails)
+7. `(x, y)` — **last resort only**
+
+## Rules
+
+- Never hard-code `tap(360, 900)` when the element can be found in UI hierarchy.
+- Do not assume button position from screen resolution.
+- Automation must survive resolution, density, orientation, and layout changes.
+- Search for the element before using coordinates.
+- If coordinates are unavoidable, prefer normalized/relative coords vs screen size — not fixed absolute pixels.
+- Every locator action: **timeout + retry + verify after action**.
+- On failure: log diagnostics — screenshot, UI hierarchy snippet, locators tried, why fallback was used.
+- Do not use long `sleep` to wait for UI; use explicit wait/polling on UI conditions.
+
+## Preferred pattern
+
+```text
+find(resourceId="com.example:id/login_button") → tap() → verify()
+```
+
+Fallback chain:
+
+```text
+find(contentDesc="Login") → tap() → verify()
+find(text="Login")         → tap() → verify()
+```
+
+Coordinates only when all element-based locators fail and no reliable alternative exists.
+
+## In this codebase
+
+- Prefer `driver.UI` methods (`TapTexts`, `FillField`, find by resource-id/desc) over `Client.Tap(x, y)`.
+- Extend `ui.FindQuery` / Appium selectors before adding coordinate taps.
+- Config actions should reference text/resource-id, not raw `x`/`y`, unless explicitly marked as coordinate fallback.

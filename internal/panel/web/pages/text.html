@@ -1,0 +1,29 @@
+<div class="page" id="page-text" data-page="text">
+  <header class="page-header">
+    <h1 class="page-title">Text Konten</h1>
+    <p class="page-sub">Teks posting per kategori — auto post ambil random dari database.</p>
+  </header>
+  <section class="z-card" id="section-text">
+    <div class="z-card-bd">
+      <div class="log-tabs text-tabs">
+        <button type="button" class="log-tab active" id="textTabPersonal" onclick="setTextTab('personal')">Personal</button>
+        <button type="button" class="log-tab" id="textTabFanpage" onclick="setTextTab('fanpage')">Fanpages</button>
+        <button type="button" class="log-tab" id="textTabGroup" onclick="setTextTab('group')">Grup</button>
+      </div>
+      <div class="text-add">
+        <textarea id="textInput" class="text-input" rows="3" placeholder="Tulis kalimat posting…"></textarea>
+        <div class="text-add-actions">
+          <input type="text" id="textImageFile" class="text-image-input" placeholder="Gambar opsional (data/post_images/)">
+          <button type="button" class="btn btn-sm btn-primary" onclick="addPostText()">+ Tambah</button>
+        </div>
+      </div>
+      <div class="text-list-hd">
+        <span id="textListCount">0 teks</span>
+        <span class="text-list-hint">Dipakai random saat auto post</span>
+      </div>
+      <div class="text-list" id="textList">
+        <div class="empty">Memuat…</div>
+      </div>
+    </div>
+  </section>
+</div>
