@@ -22,6 +22,12 @@ func (b *panelBounds) set(x, y, width, height int) {
 	b.live = true
 }
 
+func (b *panelBounds) hasLive() bool {
+	b.mu.RLock()
+	defer b.mu.RUnlock()
+	return b.live && b.width > 0
+}
+
 func (b *panelBounds) mirrorStartX() int {
 	b.mu.RLock()
 	defer b.mu.RUnlock()

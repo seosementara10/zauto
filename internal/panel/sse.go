@@ -93,9 +93,12 @@ func (s *Server) mirrorHealthLoop() {
 			return
 		case <-ticker.C:
 			s.mu.RLock()
-			var needRetry bool
+			devicesCopy := append([]DeviceInfo(nil), s.devices...)
+			s.mu.RUnlock()
+
 			s.mirrorMu.Lock()
-			for _, d := range s.devices {
+			var needRetry bool
+			for _, d := range devicesCopy {
 				if !d.Enabled || d.MirrorOpen || !d.Connected {
 					continue
 				}
@@ -106,7 +109,6 @@ func (s *Server) mirrorHealthLoop() {
 				break
 			}
 			s.mirrorMu.Unlock()
-			s.mu.RUnlock()
 			if needRetry {
 				log.Printf("panel: mirror belum terbuka — retry sync")
 				s.requestSyncMirrors()

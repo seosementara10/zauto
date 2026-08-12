@@ -15,8 +15,7 @@ type workAreaRect struct {
 	Left, Top, Right, Bottom int32
 }
 
-// desktopWindowBounds returns panel width/height and top-left position on the primary monitor.
-func desktopWindowBounds() (width, height, x, y int) {
+func primaryMonitorWorkArea() (left, top, right, bottom int) {
 	var area workAreaRect
 	_, _, _ = procSystemParametersInfo.Call(
 		uintptr(spiGetWorkArea),
@@ -24,8 +23,14 @@ func desktopWindowBounds() (width, height, x, y int) {
 		uintptr(unsafe.Pointer(&area)),
 		0,
 	)
-	workW := int(area.Right - area.Left)
-	workH := int(area.Bottom - area.Top)
+	return int(area.Left), int(area.Top), int(area.Right), int(area.Bottom)
+}
+
+// desktopWindowBounds returns panel width/height and top-left position on the primary monitor.
+func desktopWindowBounds() (width, height, x, y int) {
+	left, top, right, bottom := primaryMonitorWorkArea()
+	workW := right - left
+	workH := bottom - top
 	if workH < 480 {
 		workH = WindowHeightFallback
 	}
@@ -46,10 +51,10 @@ func desktopWindowBounds() (width, height, x, y int) {
 		width = workW - 32
 	}
 
-	x = int(area.Left) + (workW-width)/2
-	if x < int(area.Left)+8 {
-		x = int(area.Left) + 8
+	x = left + (workW-width)/2
+	if x < left+8 {
+		x = left + 8
 	}
-	y = int(area.Top) + 8
+	y = top + 8
 	return width, height, x, y
 }

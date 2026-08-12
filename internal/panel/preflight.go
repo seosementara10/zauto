@@ -11,8 +11,8 @@ func (s *Server) preflightLocked() map[string]interface{} {
 	var reasons []string
 
 	enabledCount := 0
-	for _, d := range s.devices {
-		if d.Enabled {
+	for _, on := range s.enabled {
+		if on {
 			enabledCount++
 		}
 	}

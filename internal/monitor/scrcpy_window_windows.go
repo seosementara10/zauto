@@ -10,19 +10,22 @@ import (
 )
 
 const (
-	swpNoZOrder     = 0x0004
-	swpNoActivate   = 0x0010
-	swpShowWindow   = 0x0040
-	enumWindowsStop = 0
+	swpNoZOrder       = 0x0004
+	swpNoActivate     = 0x0010
+	swpShowWindow     = 0x0040
+	enumWindowsStop   = 0
+	hwndTop           = 0
+	swRestore         = 9
 )
 
 var (
-	user32                 = syscall.NewLazyDLL("user32.dll")
-	procEnumWindows        = user32.NewProc("EnumWindows")
-	procGetWindowTextW     = user32.NewProc("GetWindowTextW")
+	user32                   = syscall.NewLazyDLL("user32.dll")
+	procEnumWindows          = user32.NewProc("EnumWindows")
+	procGetWindowTextW       = user32.NewProc("GetWindowTextW")
 	procGetWindowTextLengthW = user32.NewProc("GetWindowTextLengthW")
-	procIsWindowVisible    = user32.NewProc("IsWindowVisible")
-	procSetWindowPos       = user32.NewProc("SetWindowPos")
+	procIsWindowVisible      = user32.NewProc("IsWindowVisible")
+	procSetWindowPos         = user32.NewProc("SetWindowPos")
+	procShowWindow           = user32.NewProc("ShowWindow")
 )
 
 func windowTitle(hwnd syscall.Handle) string {
@@ -96,6 +99,21 @@ func findScrcpyWindow(serial string, hpNum int) syscall.Handle {
 // ScrcpyWindowRunning reports whether a visible scrcpy window exists for the device.
 func ScrcpyWindowRunning(serial string) bool {
 	return findScrcpyWindow(serial, 0) != 0
+}
+
+// BringScrcpyWindowToFront restores and raises the scrcpy window for a device.
+func BringScrcpyWindowToFront(serial string, hpNum int) {
+	hwnd := findScrcpyWindow(serial, hpNum)
+	if hwnd == 0 {
+		return
+	}
+	procShowWindow.Call(uintptr(hwnd), uintptr(swRestore))
+	procSetWindowPos.Call(
+		uintptr(hwnd),
+		uintptr(hwndTop),
+		0, 0, 0, 0,
+		uintptr(swpNoZOrder|swpShowWindow),
+	)
 }
 
 // RelayoutScrcpyWindows moves existing scrcpy windows to new tiles without restarting.

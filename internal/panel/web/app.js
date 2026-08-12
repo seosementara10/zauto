@@ -9,7 +9,7 @@ let pollTimer = null;
 let pagesReady = false;
 let bootAt = 0;
 const BOOT_GRACE_MS = 8000;
-const UI_ASSET_VER = '2.6';
+const UI_ASSET_VER = '2.7';
 const activityLog = [];
 const PAGE_ORDER = ['dashboard', 'devices', 'accounts', 'skrip', 'text', 'settings', 'kontrol', 'log'];
 

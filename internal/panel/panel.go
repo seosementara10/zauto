@@ -378,7 +378,9 @@ func (s *Server) handleMirrorRelayout(w http.ResponseWriter, r *http.Request) {
 	if restarted > 0 {
 		s.requestSyncMirrors()
 	} else {
+		s.mirrorMu.Lock()
 		s.syncMirrorOpenFlagsLocked()
+		s.mirrorMu.Unlock()
 		s.broadcastState()
 	}
 
@@ -704,9 +706,7 @@ func (s *Server) refreshDevicesFrom(all []string) {
 			if monitor.ScrcpyRunningForSerial(serial) {
 				monitor.StopScrcpyForSerial(serial)
 			}
-			continue
 		}
-		s.devices[i].MirrorOpen = monitor.ScrcpyRunningForSerial(serial)
 	}
 	s.bumpStateRevLocked()
 }
