@@ -9,7 +9,7 @@ let pollTimer = null;
 let pagesReady = false;
 let bootAt = 0;
 const BOOT_GRACE_MS = 8000;
-const UI_ASSET_VER = '2.4';
+const UI_ASSET_VER = '2.6';
 const activityLog = [];
 const PAGE_ORDER = ['dashboard', 'devices', 'accounts', 'skrip', 'text', 'settings', 'kontrol', 'log'];
 
@@ -134,6 +134,17 @@ function escAttr(s) {
   return esc(s).replace(/\u0060/g, '&#96;');
 }
 
+function deviceStats() {
+  const devices = state.devices || [];
+  const connected = devices.filter(d => d.connected !== false);
+  return {
+    connected: connected.length,
+    enabled: connected.filter(d => d.enabled).length,
+    mirrorOpen: devices.filter(d => d.mirror_open).length,
+    mirrorErrors: devices.filter(d => d.enabled && d.mirror_error).length
+  };
+}
+
 function applyState(data) {
   if (!data) return false;
   if (data.ui_rev != null && data.ui_rev !== uiRev) {
@@ -150,7 +161,6 @@ function applyState(data) {
   }
   if (!Array.isArray(data.devices) && data.run_status === undefined) return false;
 
-  // Jangan timpa switch yang sedang di-toggle (race dengan polling/SSE).
   if (Array.isArray(data.devices) && pendingToggle.size) {
     data = Object.assign({}, data, {
       devices: data.devices.map(d => {
@@ -160,12 +170,24 @@ function applyState(data) {
         return d;
       })
     });
-    if (data.enabled_count == null) {
-      data.enabled_count = data.devices.filter(d => d.enabled && d.connected !== false).length;
-    }
   }
 
   state = data;
+
+  // Sinkronkan counter server dengan array device (hindari "0 switch ON" vs toggle hijau).
+  const ds = deviceStats();
+  state.enabled_count = ds.enabled;
+  state.mirror_open_count = ds.mirrorOpen;
+
+  if (state.panel_dev) {
+    console.log('[zauto state rev=' + stateRev + ']', ds, (state.devices || []).map(d => ({
+      s: '…' + (d.serial || '').slice(-8),
+      en: !!d.enabled,
+      mo: !!d.mirror_open,
+      err: d.mirror_error || ''
+    })));
+  }
+
   render();
   renderDevBadge();
   return true;
@@ -428,11 +450,23 @@ function renderAccDetailBody(account) {
 function renderAccSettingsBody(account, accountId) {
   const devices = state.devices || [];
   const assigned = account.assigned_serial || '';
+  const login = account.login_id || '';
   const devOpts = devices.map((d, i) => {
     const tail = (d.serial || '').slice(-8);
     const sel = d.serial === assigned ? ' selected' : '';
     return '<option value="' + escAttr(d.serial) + '"' + sel + '>HP' + (i + 1) + ' …' + esc(tail) + '</option>';
   }).join('');
+
+  const editBlock =
+    '<div class="acc-drawer-section">' +
+      '<div class="acc-drawer-label">Edit akun</div>' +
+      '<div class="acc-edit-form">' +
+        '<label class="z-field">Nama <input type="text" id="accEditName" value="' + escAttr(account.name || '') + '" placeholder="Nama FB"></label>' +
+        '<label class="z-field">Email / ID <input type="text" id="accEditLogin" value="' + escAttr(login) + '" placeholder="email@… atau nomor"></label>' +
+        '<label class="z-field">Password <input type="password" id="accEditPass" value="" placeholder="Kosongkan = tidak diubah" autocomplete="new-password"></label>' +
+        '<button type="button" class="btn btn-sm btn-primary acc-drawer-save" onclick="saveAccountEdit(' + accountId + ')">Simpan akun</button>' +
+      '</div>' +
+    '</div>';
 
   let assignBlock = '';
   if (assigned) {
@@ -455,9 +489,10 @@ function renderAccSettingsBody(account, accountId) {
     assignBlock = '<div class="acc-drawer-section acc-drawer-muted">Colok HP di tab Device untuk assign.</div>';
   }
 
-  return assignBlock +
+  return editBlock + assignBlock +
     '<div class="acc-drawer-section">' +
       '<div class="acc-drawer-label">Pipeline (per akun)</div>' +
+      '<p class="acc-drawer-hint">Tersimpan otomatis saat dicentang</p>' +
       pipelineChecksHtml(account, 'accDrawerPipe' + accountId) +
       '<div class="acc-drawer-steps" id="accDrawerSteps">' + esc(pipelineSummary(account)) + '</div>' +
     '</div>';
@@ -501,6 +536,21 @@ async function saveAccountPipeline(accountId, boxId) {
     summary.textContent = PIPELINE_STEPS.filter(s => steps.includes(s.id)).map(s => s.label).join(' → ');
   }
   log('Pipeline akun #' + accountId + ': ' + steps.join(' → '));
+}
+
+async function saveAccountEdit(accountId) {
+  const name = (document.getElementById('accEditName')?.value || '').trim();
+  const login = (document.getElementById('accEditLogin')?.value || '').trim();
+  const password = (document.getElementById('accEditPass')?.value || '').trim();
+  if (!login) { log('Email / ID wajib diisi'); return; }
+  const body = { id: accountId, name, password };
+  if (login.includes('@')) body.email = login;
+  else body.profile_id = login;
+  const ok = await api('accounts/update', body);
+  if (ok === false) return;
+  const passEl = document.getElementById('accEditPass');
+  if (passEl) passEl.value = '';
+  log('Akun #' + accountId + ' disimpan');
 }
 
 function fanpageCell(a) {
@@ -574,8 +624,7 @@ function confirmEnableAll() {
 }
 
 function confirmDisableAll() {
-  const ec = state.enabled_count || 0;
-  const mo = state.mirror_open_count || 0;
+  const ec = deviceStats().enabled;
   if (!ec) { log('Tidak ada HP aktif'); return; }
   if (!confirm('Matikan mirror untuk ' + ec + ' HP aktif?')) return;
   api('devices/disable-all');
@@ -599,23 +648,14 @@ async function api(path, body) {
 const pendingToggle = new Set();
 const pendingToggleWant = new Map();
 
-function patchDeviceToggleUI(serial, enabled) {
-  const sel = '.dev-item[data-serial="' + (typeof CSS !== 'undefined' && CSS.escape ? CSS.escape(serial) : serial.replace(/"/g, '\\"')) + '"]';
-  const row = document.querySelector(sel);
-  if (!row) return;
-  const cb = row.querySelector('input[type=checkbox]');
-  if (cb && cb.checked !== enabled) cb.checked = enabled;
-  row.classList.toggle('dev-item--active', !!enabled);
-  const badge = row.querySelector('.dev-badge');
-  if (badge) {
-    if (!enabled) {
-      badge.className = 'dev-badge dev-badge--standby';
-      badge.textContent = 'Standby';
-    } else {
-      badge.className = 'dev-badge dev-badge--wait';
-      badge.textContent = 'Membuka mirror…';
-    }
-  }
+function updateStatsLine() {
+  const ds = deviceStats();
+  const statsLine = document.getElementById('statsLine');
+  if (!statsLine) return;
+  const wk = state.workers ?? document.getElementById('workers')?.value ?? 2;
+  const ac = state.account_count || 0;
+  statsLine.innerHTML =
+    '<strong>' + ds.enabled + '</strong> switch ON · <strong>' + ds.mirrorOpen + '</strong> mirror terbuka · <strong>' + wk + '</strong> Worker · <strong>' + ac + '</strong> Akun';
 }
 
 function devDotClass(st) {
@@ -631,17 +671,8 @@ async function toggleDev(serial, enabled, el) {
   const prev = dev ? !!dev.enabled : false;
   if (dev) {
     dev.enabled = enabled;
-    patchDeviceToggleUI(serial, enabled);
-    const ec = (state.devices || []).filter(d => d.enabled && d.connected !== false).length;
-    state.enabled_count = ec;
-    const statsLine = document.getElementById('statsLine');
-    if (statsLine) {
-      const mo = state.mirror_open_count || 0;
-      const wk = state.workers ?? document.getElementById('workers')?.value ?? 2;
-      const ac = state.account_count || 0;
-      statsLine.innerHTML =
-        '<strong>' + ec + '</strong> switch ON · <strong>' + mo + '</strong> mirror terbuka · <strong>' + wk + '</strong> Worker · <strong>' + ac + '</strong> Akun';
-    }
+    renderDevicesPage();
+    updateStatsLine();
   }
   if (el) el.disabled = true;
   try {
@@ -653,10 +684,9 @@ async function toggleDev(serial, enabled, el) {
     const text = await r.text();
     if (!r.ok) {
       if (dev) dev.enabled = prev;
-      pendingToggleWant.set(serial, prev);
-      patchDeviceToggleUI(serial, prev);
+      log('toggle gagal: ' + serial.slice(-8) + ' — ' + text.slice(0, 80));
       renderDevicesPage();
-      log('toggle gagal: ' + serial.slice(-8));
+      updateStatsLine();
       return;
     }
     try {
@@ -668,10 +698,9 @@ async function toggleDev(serial, enabled, el) {
     log((enabled ? '✓ Aktif' : '○ Nonaktif') + ' …' + serial.slice(-8));
   } catch (e) {
     if (dev) dev.enabled = prev;
-    pendingToggleWant.set(serial, prev);
-    patchDeviceToggleUI(serial, prev);
+    log('toggle error: ' + (e.message || e));
     renderDevicesPage();
-    log('toggle error');
+    updateStatsLine();
   } finally {
     pendingToggle.delete(serial);
     pendingToggleWant.delete(serial);
@@ -1016,7 +1045,8 @@ function renderAdbBanner() {
   const el = document.getElementById('adbBanner');
   if (!el) return;
   const err = state.adb_error || '';
-  const connected = (state.devices || []).filter(d => d.connected !== false).length;
+  const ds = deviceStats();
+  const mirrorErrs = (state.devices || []).filter(d => d.enabled && d.mirror_error);
   if (err) {
     el.style.display = '';
     el.className = 'dev-info-banner err';
@@ -1024,7 +1054,16 @@ function renderAdbBanner() {
     refreshLucideIcons(el);
     return;
   }
-  if (connected === 0) {
+  if (mirrorErrs.length) {
+    el.style.display = '';
+    el.className = 'dev-info-banner err';
+    el.innerHTML = DEV_INFO_ICON + '<span>Mirror gagal: ' +
+      mirrorErrs.map(d => esc((d.serial || '').slice(-8) + ' → ' + (d.mirror_error || 'unknown'))).join(' · ') +
+      ' — cek logs/panel-desktop.log</span>';
+    refreshLucideIcons(el);
+    return;
+  }
+  if (ds.connected === 0) {
     el.style.display = '';
     el.className = 'dev-info-banner';
     el.innerHTML = DEV_INFO_ICON + '<span>Memindai USB… colok HP dan tunggu beberapa detik (otomatis).</span>';
@@ -1033,7 +1072,7 @@ function renderAdbBanner() {
   }
   el.style.display = '';
   el.className = 'dev-info-banner';
-  el.innerHTML = DEV_INFO_ICON + '<span>' + connected + ' HP terhubung via USB — aktifkan switch untuk mirror.</span>';
+  el.innerHTML = DEV_INFO_ICON + '<span>' + ds.connected + ' HP terhubung via USB — aktifkan switch untuk mirror.</span>';
   refreshLucideIcons(el);
 }
 
@@ -1115,8 +1154,8 @@ async function openMirror(serial) {
 function renderDevicesPage() {
   const devices = state.devices || [];
   const connectedN = devices.filter(d => d.connected !== false).length;
-  const ec = state.enabled_count || 0;
-  const mo = state.mirror_open_count || 0;
+  const ec = devices.filter(d => d.enabled && d.connected !== false).length;
+  const mo = devices.filter(d => d.mirror_open).length;
   const standbyN = devices.filter(d => d.connected !== false && !d.enabled).length;
   const running = state.run_status === 'running' || state.run_status === 'paused';
 
@@ -1411,8 +1450,9 @@ function render() {
     } catch (e) { console.error('applySettingsForm', e); }
   }
 
-  const ec = state.enabled_count || 0;
-  const mo = state.mirror_open_count || 0;
+  const ds = deviceStats();
+  const ec = ds.enabled;
+  const mo = ds.mirrorOpen;
   const ac = state.account_count || 0;
   const asg = state.assigned_count || 0;
   const wk = state.workers ?? document.getElementById('workers')?.value ?? 2;

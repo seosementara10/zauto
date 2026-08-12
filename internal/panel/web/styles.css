@@ -537,6 +537,10 @@
 .acc-drawer-lepas { width: 100%; margin-top: .25rem; }
 .acc-drawer-assign { width: 100%; }
 .acc-drawer-muted { font-size: .6875rem; color: var(--muted); padding: .625rem; background: #f8fafc; border-radius: .5rem; }
+.acc-drawer-hint { font-size: .625rem; color: var(--muted); margin: -.25rem 0 .5rem; }
+.acc-edit-form { display: flex; flex-direction: column; gap: .5rem; }
+.acc-edit-form .z-field { width: 100%; }
+.acc-drawer-save { width: 100%; margin-top: .25rem; }
 .acc-detail-row { display: grid; grid-template-columns: 5.5rem 1fr; gap: .5rem; padding: .5rem 0; border-bottom: 1px solid var(--border-light); }
 .acc-detail-row:last-child { border-bottom: none; }
 .acc-detail-k { font-size: .625rem; font-weight: 600; color: var(--muted); }

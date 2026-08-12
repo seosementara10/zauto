@@ -128,6 +128,7 @@ func (s *Server) applyMirrorLayoutLocked() {
 	}
 
 	opts := s.mirrorOpts()
+	log.Printf("Mirror sync: %d HP switch ON @ x=%d", len(serials), opts.StartX)
 	tiles := monitor.ComputeTiles(sw, sh, opts.MaxSize, len(serials), opts.StartX, opts.StartY)
 
 	desired := make(map[string]int, len(serials))

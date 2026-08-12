@@ -58,6 +58,35 @@ func (s *Server) handleAccountsCreate(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(map[string]interface{}{"id": id})
 }
 
+func (s *Server) handleAccountsUpdate(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "POST only", http.StatusMethodNotAllowed)
+		return
+	}
+	if s.Store == nil {
+		http.Error(w, "database not connected", http.StatusServiceUnavailable)
+		return
+	}
+	var body struct {
+		ID        int64  `json:"id"`
+		Name      string `json:"name"`
+		Email     string `json:"email"`
+		ProfileID string `json:"profile_id"`
+		Password  string `json:"password"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil || body.ID <= 0 {
+		http.Error(w, "invalid id", http.StatusBadRequest)
+		return
+	}
+	if err := s.Store.UpdateAccount(r.Context(), body.ID, body.Name, body.Email, body.ProfileID, body.Password); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	s.broadcastState()
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(map[string]string{"ok": "true"})
+}
+
 func (s *Server) handleAccountsImportPreview(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "POST only", http.StatusMethodNotAllowed)

@@ -97,6 +97,9 @@ func TestPanelJSFeatures(t *testing.T) {
 	if !strings.Contains(js, "registerDevice") || !strings.Contains(js, "createAccount") {
 		t.Fatal("manual device/account forms missing from panel UI")
 	}
+	if !strings.Contains(js, "saveAccountEdit") || !strings.Contains(js, "accounts/update") {
+		t.Fatal("account edit drawer missing from panel UI")
+	}
 	if !strings.Contains(js, "loadPostTexts") {
 		t.Fatal("text page loadPostTexts missing from panel UI")
 	}

@@ -135,6 +135,7 @@ func NewServer(projectRoot, configPath string, port int) *Server {
 	mux.HandleFunc("/api/accounts/import", s.handleAccountsImport)
 	mux.HandleFunc("/api/accounts/import-preview", s.handleAccountsImportPreview)
 	mux.HandleFunc("/api/accounts/create", s.handleAccountsCreate)
+	mux.HandleFunc("/api/accounts/update", s.handleAccountsUpdate)
 	mux.HandleFunc("/api/accounts/auto-assign", s.handleAccountsAutoAssign)
 	mux.HandleFunc("/api/accounts/assign", s.handleAccountsAssign)
 	mux.HandleFunc("/api/accounts/unassign", s.handleAccountsUnassign)
@@ -645,9 +646,12 @@ func (s *Server) refreshDevicesFrom(all []string) {
 	runSt := s.runStatus
 	lastRes := append([]resultEntry(nil), s.lastResults...)
 	for _, serial := range all {
+		if _, had := s.enabled[serial]; had {
+			continue // jangan timpa toggle in-memory dengan DB stale
+		}
 		if on, ok := persisted[serial]; ok {
 			s.enabled[serial] = on
-		} else if _, ok := s.enabled[serial]; !ok {
+		} else {
 			s.enabled[serial] = false
 		}
 	}
@@ -694,9 +698,15 @@ func (s *Server) refreshDevicesFrom(all []string) {
 	s.syncEnabledFlagsLocked()
 	for i := range s.devices {
 		serial := s.devices[i].Serial
-		if s.enabled[serial] {
-			s.devices[i].MirrorOpen = monitor.ScrcpyRunningForSerial(serial)
+		if !s.enabled[serial] {
+			s.devices[i].MirrorOpen = false
+			s.devices[i].MirrorError = ""
+			if monitor.ScrcpyRunningForSerial(serial) {
+				monitor.StopScrcpyForSerial(serial)
+			}
+			continue
 		}
+		s.devices[i].MirrorOpen = monitor.ScrcpyRunningForSerial(serial)
 	}
 	s.bumpStateRevLocked()
 }

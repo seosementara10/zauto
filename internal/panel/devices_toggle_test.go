@@ -48,6 +48,25 @@ func TestToggleDevicePersistsAcrossRefresh(t *testing.T) {
 	}
 }
 
+func TestRefreshDevicesFromDoesNotOverwriteEnabled(t *testing.T) {
+	srv := NewServer(t.TempDir(), "", 8765)
+	serial := "usb-serial-001"
+
+	srv.mu.Lock()
+	srv.enabled[serial] = true
+	srv.mu.Unlock()
+
+	// Simulates ADB rescan — enabled already in memory must survive.
+	srv.refreshDevicesFrom([]string{serial})
+
+	srv.mu.RLock()
+	on := srv.enabled[serial]
+	srv.mu.RUnlock()
+	if !on {
+		t.Fatal("refreshDevicesFrom reset in-memory enabled flag")
+	}
+}
+
 func TestDisableAllClearsEnabled(t *testing.T) {
 	srv := NewServer(t.TempDir(), "", 8765)
 	serial := "test-serial-xyz"
